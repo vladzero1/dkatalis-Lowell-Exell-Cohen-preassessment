@@ -25,7 +25,7 @@ class AllTask
 	public Runnable AsyncTasks(String[] values) {
 		return new Thread(new Runnable() {
 			public void run() {
-				System.out.println("Words Amount  = " + task.Calculate(values));
+				System.out.println(task.getClass().getSimpleName() + " Amount = " + task.Calculate(values));
 			}
 		});
 	}
@@ -71,9 +71,9 @@ class ReadFile implements Callable<String[]> {
 				data += "|";
 			}
 			words = data.split("[|]");
-			for (String word : words) 
+			for (String sentence : words) 
 			{
-				System.out.println(word);
+				System.out.println("\"" +sentence +"\"");
 			}
 			myReader.close();
 			return words;
