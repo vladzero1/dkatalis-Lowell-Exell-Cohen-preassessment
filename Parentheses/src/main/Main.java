@@ -7,8 +7,6 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import sun.security.util.Length;
-
 public class Main {
 	private static final Scanner scanner = new Scanner(System.in);
 
