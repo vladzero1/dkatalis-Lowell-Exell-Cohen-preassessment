@@ -4,85 +4,77 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
-// I'm Sure i did this more than 2 hours(i did it after 1st test)
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+// I'm Sure i did this more than 4 hours(i did it after 1st test)
 interface Task {
-	int CalculateWords(String[] value);
-	int CalculateLine(String[] value);
+	int Calculate(String[] thread1);
 }
 
-class AllTask {
+class AllTask
+{
 	Task task;
 
 	public AllTask(Task task) {
 		this.task = task;
 	}
 
-	public void AsyncTasks(String[] data) {
-		new Thread(new Runnable() {
+	public Runnable AsyncTasks(String[] values) {
+		return new Thread(new Runnable() {
 			public void run() {
-				System.out.println("Words Amount  = " + task.CalculateWords(data));
+				System.out.println("Words Amount  = " + task.Calculate(values));
 			}
-		}).start();
-		
-		new Thread(new Runnable() {
-			public void run() {
-				System.out.println("Line Amount  = " + task.CalculateLine(data));
-			}
-		}).start();
+		});
 	}
 }
 
-class Obj2 implements Task {
+class Words implements Task {
 	@Override
-	public int CalculateWords(String[] value) {
+	public int Calculate(String[] value) {
 		// TODO Auto-generated method stub
 		ArrayList<String> str = new ArrayList<>();
-		for(String string : value)
-		{
+		for (String string : value) {
 			String[] temp = string.split(" ");
-			for(String val : temp)
-			{
+			for (String val : temp) {
 				str.add(val);
 			}
 		}
 		return str.size();
 	}
+}
 
+class Lines implements Task {
 	@Override
-	public int CalculateLine(String[] value) {
+	public int Calculate(String[] value) {
 		// TODO Auto-generated method stub
 		return value.length;
 	}
 
 }
 
-public class Main {
-	public static void main(String[] args) 
+class ReadFile implements Callable<String[]> {
+	@Override
+	public String[] call() throws Exception 
 	{
-		AllTask obj = new AllTask(new Obj2());
-		String[] data = ReadFile();
-		obj.AsyncTasks(data);
-
-	}
-
-	public static String[] ReadFile() 
-	{
+		String[] words = null;
 		try 
 		{
 			File file = new File("Input.txt");
 			Scanner myReader = new Scanner(file);
-			String data ="";
+			String data = "";
 			while (myReader.hasNextLine()) 
 			{
 				data += myReader.nextLine();
 				data += "|";
 			}
-			String[] words = data.split("[|]");
-			for(String word : words)
+			words = data.split("[|]");
+			for (String word : words) 
 			{
 				System.out.println(word);
 			}
-
 			myReader.close();
 			return words;
 		} 
@@ -90,7 +82,23 @@ public class Main {
 		{
 			System.out.println("An error occurred.");
 			e.printStackTrace();
-			return null;
+			return words;
 		}
 	}
+}
+
+public class Main {
+
+	public static void main(String[] args) throws Exception {
+		AllTask words = new AllTask(new Words());
+		AllTask lines = new AllTask(new Lines());
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+        Callable<String[]> thread1 = new ReadFile();
+        Future<String[]> future = executor.submit(thread1);
+        
+        executor.submit(words.AsyncTasks(future.get()));
+        executor.submit(lines.AsyncTasks(future.get()));
+        executor.shutdown();
+	}
+
 }
