@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
-
+// I'm Sure i did this more than 2 hours(i did it after 1st test)
 interface Task {
 	int CalculateWords(String[] value);
 	int CalculateLine(String[] value);
