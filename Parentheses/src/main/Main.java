@@ -32,13 +32,38 @@ public class Main {
 		while (matcher.find()) {
 			arr.add(matcher.group(1));
 		}
-
-		if (arr.size() % 2 == 0) {
-			for (int i = 0; i < arr.size()/2; i++) {
-				 if(!map.get(arr.get(i)).equalsIgnoreCase(arr.get(arr.size()-i-1)))
-				 {
-					 return false;
-				 }
+		boolean sendToBack = false;
+		for (int i = arr.size() - 1; i >= 0; i--) // rearrange
+		{
+			if (sendToBack == true && !map.containsKey(arr.get(i))) 
+			{
+				int minIndex = 0;
+				for (int j = i; j >= 0; j--) 
+				{
+					if (!map.containsKey(arr.get(j))) 
+						minIndex = j;
+					else 
+						break;
+				}
+				for (int j = minIndex; j <= i;) 
+				{
+					arr.add(arr.get(j));
+					arr.remove(j);
+					if (map.containsKey(arr.get(j)))
+						break;
+				}
+				i = minIndex;
+			}
+			if (map.containsKey(arr.get(i)))
+				sendToBack = true;
+			
+		}
+		if (arr.size() % 2 == 0) 
+		{
+			for (int i = 0; i < arr.size() / 2; i++)
+			{
+				if (!map.get(arr.get(i)).equals(arr.get(arr.size() - i - 1)))
+					return false;
 			}
 			return true;
 		} else
